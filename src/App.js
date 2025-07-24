@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import {Navigate, Route, Routes} from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import ReportsPage from "./pages/ReportsPage";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const PrivateRoute = ({children}) => {
+    const token = localStorage.getItem('token');
+    return token ? children : <Navigate to="/login" replace/>
 }
 
-export default App;
+export default function App() {
+    return (
+        <Routes>
+            <Route path="/login" element={<LoginPage/>}/>
+            <Route path="/reports" element={
+                <PrivateRoute>
+                    <ReportsPage/>
+                </PrivateRoute>}
+            />
+            <Route path="*" element={
+                <PrivateRoute>
+                    <Navigate to="/reports" replace/>
+                </PrivateRoute>
+            }/>
+        </Routes>
+    );
+}
+
